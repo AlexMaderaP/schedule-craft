@@ -1,0 +1,129 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  font-family: sans-serif;
+}
+
+:root {
+  --blue-background: hsl(200, 80%, 50%);
+  --red-background: hsl(0, 75%, 60%);
+  --green-background: hsl(150, 80%, 30%);
+  --border-color: #dadce0;
+  --border-size: 1px;
+  --day-padding: 0.25rem;
+}
+
+body {
+  margin: 0;
+}
+
+#root {
+  height: 100vh;
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.calendar {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  color: #333;
+}
+
+.header {
+  padding: 1rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.header > * {
+  margin-right: 0.5rem;
+}
+
+.header > :last-child {
+  margin-right: 0;
+}
+
+.btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 0.25rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 250ms;
+  color: #333;
+}
+
+.btn:hover {
+  background-color: #f1f3f4;
+}
+
+.btn.btn-delete {
+  border-color: hsl(0, 75%, 60%);
+  background-color: hsl(0, 75%, 95%);
+  color: hsl(0, 75%, 10%);
+}
+
+.btn.btn-delete:hover {
+  background-color: hsl(0, 75%, 90%);
+}
+
+.btn.btn-success {
+  border-color: hsl(150, 80%, 30%);
+  background-color: hsl(150, 80%, 95%);
+  color: hsl(150, 80%, 10%);
+}
+
+.btn.btn-success:hover {
+  background-color: hsl(150, 80%, 90%);
+}
+
+.close-btn {
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 1.75rem;
+  width: 2rem;
+  padding: 0;
+  height: 2rem;
+  text-align: center;
+  vertical-align: middle;
+  border-radius: 100%;
+  transition: background-color 250ms;
+  color: #333;
+}
+
+.close-btn:hover {
+  background-color: #eaeaea;
+}
+
+.month-change-btn {
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  width: 2rem;
+  padding: 0;
+  height: 2rem;
+  text-align: center;
+  vertical-align: middle;
+  border-radius: 100%;
+  transition: background-color 250ms;
+  color: #333;
+}
+
+.month-change-btn:hover {
+  background-color: #f1f3f4;
+}
+
+.month-change-btn:first-child {
+  margin-right: -0.5rem;
+}
+
+.month-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
