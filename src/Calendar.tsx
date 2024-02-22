@@ -1,5 +1,4 @@
 import {
-  addMonths,
   eachDayOfInterval,
   endOfMonth,
   endOfWeek,
@@ -11,13 +10,13 @@ import {
   startOfMonth,
   startOfWeek,
   subDays,
-  subMonths,
 } from "date-fns";
-import { useState } from "react";
 
-function Calendar() {
-  const [monthShowed, setMonthShowed] = useState(new Date());
+type CalendarProps = {
+  monthShowed: Date;
+};
 
+function Calendar({ monthShowed }: CalendarProps) {
   const monthStart = startOfWeek(startOfMonth(monthShowed));
 
   const dateRange = eachDayOfInterval({
@@ -37,42 +36,20 @@ function Calendar() {
   }
 
   return (
-    <div className="calendar">
-      <div className="header">
-        <button className="btn" onClick={() => setMonthShowed(new Date())}>
-          Today
-        </button>
-        <div>
-          <button
-            className="month-change-btn"
-            onClick={() => setMonthShowed((curr) => subMonths(curr, 1))}
-          >
-            &lt;
-          </button>
-          <button
-            className="month-change-btn"
-            onClick={() => setMonthShowed((curr) => addMonths(curr, 1))}
-          >
-            &gt;
-          </button>
-        </div>
-        <span className="month-title">{format(monthShowed, "MMMM yyyy")}</span>
-      </div>
-      <div className="days">
-        {dateRange.map((day) => (
-          <div key={day.getTime()} className={handleMonthClass(day)}>
-            <div className="day-header">
-              {isDayOfFirstWeek(day) && (
-                <div className="week-name">{format(day, "iii")}</div>
-              )}
-              <div className={`day-number ${isToday(day) && "today"}`}>
-                {format(day, "d")}
-              </div>
-              <button className="add-event-btn">+</button>
+    <div className="days">
+      {dateRange.map((day) => (
+        <div key={day.getTime()} className={handleMonthClass(day)}>
+          <div className="day-header">
+            {isDayOfFirstWeek(day) && (
+              <div className="week-name">{format(day, "iii")}</div>
+            )}
+            <div className={`day-number ${isToday(day) && "today"}`}>
+              {format(day, "d")}
             </div>
+            <button className="add-event-btn">+</button>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </div>
   );
 }
