@@ -127,3 +127,55 @@ body {
   font-size: 1.5rem;
   font-weight: bold;
 }
+
+.days {
+  flex-grow: 1;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-auto-rows: minmax(100px, 1fr);
+  background-color: var(--border-color);
+  gap: var(--border-size);
+  padding: var(--border-size);
+}
+
+.day {
+  background-color: white;
+  padding: var(--day-padding);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.non-month-day {
+  opacity: 0.75;
+}
+
+.old-month-day .events,
+.old-month-day .day-header {
+  opacity: 0.5;
+}
+
+.day-header {
+  margin-bottom: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.week-name {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #777;
+}
+
+.day-number {
+  font-size: 0.9rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
