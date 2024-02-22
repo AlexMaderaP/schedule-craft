@@ -179,3 +179,36 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+.day-number.today {
+  background-color: var(--blue-background);
+  border-radius: 50%;
+  color: white;
+}
+
+.day:hover .add-event-btn,
+.add-event-btn:focus {
+  opacity: 1;
+}
+
+.add-event-btn {
+  opacity: 0;
+  position: absolute;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  right: 0;
+  top: 0;
+  font-size: 1.25rem;
+  cursor: pointer;
+  color: #333;
+}
+
+.add-event-btn:hover {
+  background-color: #f1f3f4;
+}
