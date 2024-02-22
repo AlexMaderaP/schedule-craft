@@ -11,12 +11,16 @@ import {
   startOfWeek,
   subDays,
 } from "date-fns";
+import { useState } from "react";
+import CreateEventForm from "./CreateEventForm";
 
 type CalendarProps = {
   monthShowed: Date;
 };
 
 function Calendar({ monthShowed }: CalendarProps) {
+  const [openCreateEvent, setOpenCreateEvent] = useState(false);
+
   const monthStart = startOfWeek(startOfMonth(monthShowed));
 
   const dateRange = eachDayOfInterval({
@@ -36,21 +40,32 @@ function Calendar({ monthShowed }: CalendarProps) {
   }
 
   return (
-    <div className="days">
-      {dateRange.map((day) => (
-        <div key={day.getTime()} className={handleMonthClass(day)}>
-          <div className="day-header">
-            {isDayOfFirstWeek(day) && (
-              <div className="week-name">{format(day, "iii")}</div>
-            )}
-            <div className={`day-number ${isToday(day) && "today"}`}>
-              {format(day, "d")}
+    <>
+      <div className="days">
+        {dateRange.map((day) => (
+          <div key={day.getTime()} className={handleMonthClass(day)}>
+            <div className="day-header">
+              {isDayOfFirstWeek(day) && (
+                <div className="week-name">{format(day, "iii")}</div>
+              )}
+              <div className={`day-number ${isToday(day) && "today"}`}>
+                {format(day, "d")}
+              </div>
+              <button
+                className="add-event-btn"
+                onClick={() => setOpenCreateEvent(true)}
+              >
+                +
+              </button>
             </div>
-            <button className="add-event-btn">+</button>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+      <CreateEventForm
+        openCreateEvent={openCreateEvent}
+        setOpenCreateEvent={setOpenCreateEvent}
+      />
+    </>
   );
 }
 
