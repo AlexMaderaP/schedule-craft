@@ -1,26 +1,25 @@
-import React from "react";
 import { createPortal } from "react-dom";
+import AddEventForm from "../components/AddEventForm";
 
 type CreateEventProps = {
   openCreateEvent: boolean;
-  setOpenCreateEvent: React.Dispatch<React.SetStateAction<boolean>>;
+  closeCreateEventModal: () => void;
+  dateToCreateEvent: Date;
 };
+
 function CreateEventForm({
   openCreateEvent,
-  setOpenCreateEvent,
+  closeCreateEventModal,
+  dateToCreateEvent,
 }: CreateEventProps) {
   return createPortal(
     <div className={`modal-overlay ${openCreateEvent ? "show" : ""}`}>
       <div className="modal">
         <div className="modal-body">
-          <p>This is where the form would be</p>
-          <button
-            onClick={() => {
-              setOpenCreateEvent(false);
-            }}
-          >
-            Close
-          </button>
+          <AddEventForm
+            dateToCreateEvent={dateToCreateEvent}
+            closeCreateEventModal={closeCreateEventModal}
+          />
         </div>
       </div>
     </div>,

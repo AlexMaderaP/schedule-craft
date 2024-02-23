@@ -12,7 +12,7 @@ import {
   subDays,
 } from "date-fns";
 import { useState } from "react";
-import CreateEventForm from "./CreateEventForm";
+import CreateEventForm from "./modals/CreateEventForm";
 
 type CalendarProps = {
   monthShowed: Date;
@@ -20,6 +20,7 @@ type CalendarProps = {
 
 function Calendar({ monthShowed }: CalendarProps) {
   const [openCreateEvent, setOpenCreateEvent] = useState(false);
+  const [dateToCreateEvent, setDateToCreateEvent] = useState(new Date());
 
   const monthStart = startOfWeek(startOfMonth(monthShowed));
 
@@ -39,6 +40,11 @@ function Calendar({ monthShowed }: CalendarProps) {
     return isSameWeek(day, monthStart);
   }
 
+  function handleAddEvent(day: Date) {
+    setOpenCreateEvent(true);
+    setDateToCreateEvent(day);
+  }
+
   return (
     <>
       <div className="days">
@@ -53,7 +59,7 @@ function Calendar({ monthShowed }: CalendarProps) {
               </div>
               <button
                 className="add-event-btn"
-                onClick={() => setOpenCreateEvent(true)}
+                onClick={() => handleAddEvent(day)}
               >
                 +
               </button>
@@ -63,7 +69,8 @@ function Calendar({ monthShowed }: CalendarProps) {
       </div>
       <CreateEventForm
         openCreateEvent={openCreateEvent}
-        setOpenCreateEvent={setOpenCreateEvent}
+        closeCreateEventModal={() => setOpenCreateEvent(false)}
+        dateToCreateEvent={dateToCreateEvent}
       />
     </>
   );

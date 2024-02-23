@@ -77,6 +77,11 @@ body {
   color: hsl(150, 80%, 10%);
 }
 
+.btn.btn.btn-success:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .btn.btn-success:hover {
   background-color: hsl(150, 80%, 90%);
 }
@@ -261,4 +266,128 @@ body {
   max-width: 95%;
   /* animation: pop-in 250ms forwards; */
   /* scale: 0; */
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title > * {
+  margin-right: 0.25rem;
+}
+
+.modal-title > :last-child {
+  margin-right: 0;
+}
+
+.modal-title > small {
+  color: #555;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+
+.form-group.checkbox {
+  flex-direction: row;
+  align-items: center;
+}
+
+.form-group.checkbox input {
+  cursor: pointer;
+  margin-right: 0;
+}
+
+.form-group.checkbox label {
+  padding-left: 0.5rem;
+  cursor: pointer;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-group label {
+  font-weight: bold;
+  font-size: 0.8rem;
+  color: #777;
+}
+
+.label-error {
+  font-weight: bold;
+  font-size: 0.8rem;
+  color: rgb(228, 67, 67);
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.form-group input {
+  padding: 0.25rem 0.5rem;
+}
+
+.row {
+  display: flex;
+}
+
+.row > * {
+  flex-grow: 1;
+  flex-basis: 0;
+  margin-right: 0.5rem;
+}
+
+.row > :last-child {
+  margin-right: 0;
+}
+
+.row.left > * {
+  flex-grow: 0;
+}
+
+.sr-only {
+  visibility: hidden;
+  height: 0;
+  width: 0;
+  display: block;
+}
+
+.color-radio {
+  position: absolute;
+  opacity: 0;
+  left: -9999px;
+}
+
+.color-radio + label::before {
+  content: "";
+  display: block;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  opacity: 0.25;
+}
+
+.color-radio:checked + label::before {
+  opacity: 1;
+}
+
+.color-radio:focus + label::before {
+  outline: 1px solid black;
+}
+
+.color-radio[value="blue"] + label::before {
+  background-color: var(--blue-background);
+}
+
+.color-radio[value="red"] + label::before {
+  background-color: var(--red-background);
+}
+
+.color-radio[value="green"] + label::before {
+  background-color: var(--green-background);
 }
