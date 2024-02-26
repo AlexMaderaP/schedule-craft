@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { type Color, useEvents } from "../App";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 
 type AddEventFormProps = {
   dateToCreateEvent: Date;
@@ -45,17 +45,34 @@ function AddEventForm({
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (isValidTime) {
-      const event = {
-        id: crypto.randomUUID(),
-        date: dateToCreateEvent,
-        name: name,
-        allDay: allDay,
-        startTime: startTime,
-        endTime: endTime,
-        color: color,
-      };
-      addEvent(event);
-      handleClose();
+      if (allDay) {
+        const event = {
+          id: crypto.randomUUID(),
+          date: dateToCreateEvent,
+          name: name,
+          allDay: allDay,
+          color: color,
+        };
+        addEvent(event);
+        handleClose();
+      } else {
+        const hours = +startTime.slice(0, 2);
+        const mins = +startTime.slice(3);
+        const dateWithStartTime = set(dateToCreateEvent, {
+          hours: hours,
+          minutes: mins,
+        });
+        const event = {
+          id: crypto.randomUUID(),
+          date: dateWithStartTime,
+          name: name,
+          allDay: allDay,
+          endTime: endTime,
+          color: color,
+        };
+        addEvent(event);
+        handleClose();
+      }
     }
   }
 

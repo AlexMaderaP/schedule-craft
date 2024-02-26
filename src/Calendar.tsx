@@ -4,6 +4,7 @@ import {
   endOfWeek,
   format,
   isBefore,
+  isSameDay,
   isSameMonth,
   isSameWeek,
   isToday,
@@ -13,12 +14,15 @@ import {
 } from "date-fns";
 import { useState } from "react";
 import CreateEventForm from "./modals/CreateEventForm";
+import { EventType } from "./App";
+import Events from "./components/Events";
 
 type CalendarProps = {
   monthShowed: Date;
+  events: EventType[];
 };
 
-function Calendar({ monthShowed }: CalendarProps) {
+function Calendar({ monthShowed, events }: CalendarProps) {
   const [openCreateEvent, setOpenCreateEvent] = useState(false);
   const [dateToCreateEvent, setDateToCreateEvent] = useState(new Date());
 
@@ -45,6 +49,14 @@ function Calendar({ monthShowed }: CalendarProps) {
     setDateToCreateEvent(day);
   }
 
+  function containsEventInDate(day: Date) {
+    return events.some((event) => isSameDay(event.date, day));
+  }
+
+  function getEventsInDate(day: Date) {
+    return events.filter((event) => isSameDay(event.date, day));
+  }
+
   return (
     <>
       <div className="days">
@@ -64,6 +76,9 @@ function Calendar({ monthShowed }: CalendarProps) {
                 +
               </button>
             </div>
+            {containsEventInDate(day) && (
+              <Events events={getEventsInDate(day)} />
+            )}
           </div>
         ))}
       </div>

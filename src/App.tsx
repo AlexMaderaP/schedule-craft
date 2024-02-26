@@ -2,13 +2,12 @@ import { createContext, useContext, useState } from "react";
 import Calendar from "./Calendar";
 import Header from "./Header";
 
-type EventType = {
+export type EventType = {
   id: `${string}-${string}-${string}-${string}-${string}`;
   date: Date;
   name: string;
   allDay: boolean;
-  startTime: string | undefined;
-  endTime: string | undefined;
+  endTime?: string;
   color: Color;
 };
 
@@ -38,14 +37,13 @@ function App() {
     setEvents((prevEvents) => {
       return [...prevEvents, event];
     });
-    console.log(events);
   }
 
   return (
     <Context.Provider value={{ events, addEvent }}>
       <div className="calendar">
         <Header monthShowed={monthShowed} setMonthShowed={setMonthShowed} />
-        <Calendar monthShowed={monthShowed} />
+        <Calendar monthShowed={monthShowed} events={events} />
       </div>
     </Context.Provider>
   );
