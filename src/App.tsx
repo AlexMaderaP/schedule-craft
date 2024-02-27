@@ -3,8 +3,12 @@ import Calendar from "./Calendar";
 import Header from "./Header";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 
+export type Color = "blue" | "red" | "green";
+
+type EventId = `${string}-${string}-${string}-${string}-${string}`;
+
 export type EventType = {
-  id: `${string}-${string}-${string}-${string}-${string}`;
+  id: EventId;
   date: Date;
   name: string;
   allDay: boolean;
@@ -12,11 +16,11 @@ export type EventType = {
   color: Color;
 };
 
-export type Color = "blue" | "red" | "green";
-
 type ContextType = {
   events: EventType[];
   addEvent: (event: EventType) => void;
+  deleteEvent: (id: EventId) => void;
+  editEvent: (event: EventType) => void;
 };
 
 export const Context = createContext<ContextType | null>(null);
@@ -40,8 +44,26 @@ function App() {
     });
   }
 
+  function deleteEvent(id: EventId) {
+    setEvents((prevEvents) => {
+      return prevEvents.filter((event) => event.id != id);
+    });
+  }
+
+  function editEvent(event: EventType) {
+    setEvents((prevEvents) => {
+      return prevEvents.map((currEvent) => {
+        if (currEvent.id === event.id) {
+          return event;
+        } else {
+          return currEvent;
+        }
+      });
+    });
+  }
+
   return (
-    <Context.Provider value={{ events, addEvent }}>
+    <Context.Provider value={{ events, addEvent, deleteEvent, editEvent }}>
       <div className="calendar">
         <Header monthShowed={monthShowed} setMonthShowed={setMonthShowed} />
         <Calendar monthShowed={monthShowed} events={events} />

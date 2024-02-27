@@ -2,22 +2,26 @@ import { useEffect, useState } from "react";
 import { type Color, useEvents, EventType } from "../App";
 import { format, set } from "date-fns";
 
-type AddEventFormProps = {
-  dateToCreateEvent: Date;
+type EditEventFormProps = {
+  event: EventType;
   closeEventModal: () => void;
+  clearEvent: () => void;
 };
 
-function AddEventForm({
-  dateToCreateEvent,
+function EditEventForm({
+  event,
   closeEventModal,
-}: AddEventFormProps) {
-  const { addEvent } = useEvents();
+  clearEvent,
+}: EditEventFormProps) {
+  const { editEvent, deleteEvent } = useEvents();
 
-  const [name, setName] = useState("");
-  const [allDay, setAllDay] = useState(false);
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
-  const [color, setColor] = useState<Color>("blue");
+  const [name, setName] = useState(event.name);
+  const [allDay, setAllDay] = useState(event.allDay);
+  const [startTime, setStartTime] = useState(
+    event.allDay ? "" : format(event.date, "HH:mm")
+  );
+  const [endTime, setEndTime] = useState(event.allDay ? "" : event.endTime);
+  const [color, setColor] = useState<Color>(event.color);
   const [timeError, setTimeError] = useState("");
 
   const isValidTime = timeError === "";
@@ -45,51 +49,52 @@ function AddEventForm({
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (isValidTime) {
-      let event: EventType;
+      let editedEvent: EventType;
 
       const commonProperties = {
-        id: crypto.randomUUID(),
-        date: dateToCreateEvent,
+        id: event.id,
+        date: event.date,
         name: name,
         allDay: allDay,
         color: color,
       };
+
       if (allDay) {
-        event = {
+        editedEvent = {
           ...commonProperties,
         };
       } else {
         const hours = +startTime.slice(0, 2);
         const mins = +startTime.slice(3);
-        const dateWithStartTime = set(dateToCreateEvent, {
+        const dateWithStartTime = set(event.date, {
           hours: hours,
           minutes: mins,
         });
-        event = {
+        editedEvent = {
           ...commonProperties,
           date: dateWithStartTime,
           endTime: endTime,
         };
       }
-      addEvent(event);
+      editEvent(editedEvent);
       handleClose();
     }
   }
 
   function handleClose() {
-    setName("");
-    setAllDay(false);
-    setStartTime("");
-    setEndTime("");
-    setColor("blue");
-    setTimeError("");
+    clearEvent();
     closeEventModal();
+  }
+
+  function handleDelete() {
+    deleteEvent(event.id);
+    handleClose();
   }
   return (
     <>
       <div className="modal-title">
-        <div>Add Event</div>
-        <small>{format(dateToCreateEvent, "MM/dd/yyyy")}</small>
+        <div>Edit Event</div>
+        <small>{format(event.date, "MM/dd/yyyy")}</small>
         <button className="close-btn" onClick={handleClose}>
           &times;
         </button>
@@ -194,12 +199,12 @@ function AddEventForm({
             type="submit"
             disabled={!isValidTime}
           >
-            Add
+            Edit
           </button>
           <button
             className="btn btn-delete"
             type="button"
-            onClick={handleClose}
+            onClick={handleDelete}
           >
             Delete
           </button>
@@ -209,4 +214,4 @@ function AddEventForm({
   );
 }
 
-export default AddEventForm;
+export default EditEventForm;

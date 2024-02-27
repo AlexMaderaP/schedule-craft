@@ -1,28 +1,42 @@
 import { format } from "date-fns";
 import { EventType } from "../App";
 
-function Events({ events }: { events: EventType[] }) {
+type EventsProps = {
+  events: EventType[];
+  setOpenEditEvent: () => void;
+  setEventToEdit: React.Dispatch<React.SetStateAction<EventType | undefined>>;
+};
+
+function Events({ events, setOpenEditEvent, setEventToEdit }: EventsProps) {
   events.sort(compareDates);
 
+  function handleEditEvent(event: EventType) {
+    setOpenEditEvent();
+    setEventToEdit(event);
+  }
+
   return (
-    <div className="events">
-      {events.map((event) => (
-        <button
-          key={event.id}
-          className={
-            event.allDay ? `all-day-event ${event.color} event` : `event`
-          }
-        >
-          {!event.allDay && (
-            <>
-              <div className={`color-dot ${event.color}`}></div>
-              <div className="event-time">{format(event.date, "ha")}</div>
-            </>
-          )}
-          <div className="event-name">{event.name}</div>
-        </button>
-      ))}
-    </div>
+    <>
+      <div className="events">
+        {events.map((event) => (
+          <button
+            key={event.id}
+            onClick={() => handleEditEvent(event)}
+            className={
+              event.allDay ? `all-day-event ${event.color} event` : `event`
+            }
+          >
+            {!event.allDay && (
+              <>
+                <div className={`color-dot ${event.color}`}></div>
+                <div className="event-time">{format(event.date, "ha")}</div>
+              </>
+            )}
+            <div className="event-name">{event.name}</div>
+          </button>
+        ))}
+      </div>
+    </>
   );
 }
 
