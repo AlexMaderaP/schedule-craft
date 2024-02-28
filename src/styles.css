@@ -299,17 +299,6 @@ body {
   align-items: center;
 }
 
-.modal-overlay.show {
-  display: block;
-}
-
-.modal-overlay {
-  display: none;
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.1);
-}
-
 .modal .overlay {
   background-color: transparent;
   width: 100%;
@@ -324,9 +313,10 @@ body {
 
 @keyframes fade-in {
   100% {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.8);
   }
 }
+
 .modal .modal-body {
   background-color: white;
   border-radius: 0.5rem;
@@ -334,8 +324,18 @@ body {
   z-index: 1;
   min-width: 300px;
   max-width: 95%;
-  /* animation: pop-in 250ms forwards; */
-  /* scale: 0; */
+  animation: pop-in 250ms forwards;
+  scale: 0;
+}
+
+.modal.closing .modal-body {
+  animation: pop-in 250ms forwards reverse;
+}
+
+@keyframes pop-in {
+  100% {
+    scale: 1;
+  }
 }
 
 .modal-title {
