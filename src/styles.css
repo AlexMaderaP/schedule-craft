@@ -244,6 +244,15 @@ body {
   overflow: hidden;
 }
 
+.events-view-more-btn {
+  border: none;
+  background: none;
+  font-weight: bold;
+  color: #555;
+  cursor: pointer;
+  width: 100%;
+}
+
 .all-day-event {
   color: white;
   padding: 0.15rem, 0.25rem;
