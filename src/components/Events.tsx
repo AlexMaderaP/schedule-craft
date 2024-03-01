@@ -1,27 +1,27 @@
-import { format } from "date-fns";
 import { EventType } from "../App";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import EventModal from "../modals/EventModal";
+import EditEventForm from "./EditEventForm";
+import EventList from "./EventList";
+import EventItem from "./EventItem";
 
 type EventsProps = {
   events: EventType[];
-  setOpenEditEvent: () => void;
-  setEventToEdit: React.Dispatch<React.SetStateAction<EventType | undefined>>;
 };
 
-function Events({ events, setOpenEditEvent, setEventToEdit }: EventsProps) {
+function Events({ events }: EventsProps) {
   const myEvents = useRef<HTMLDivElement>(null);
   const [visibleEvents, setVisibleEvents] = useState(events.length);
+  const [eventToEdit, setEventToEdit] = useState<EventType>();
+  const [openMoreEvents, setOpenMoreEvents] = useState(false);
+  const [openEditEvent, setOpenEditEvent] = useState(false);
 
   events.sort(compareDates);
+
   const eventsToShow = events.slice(0, visibleEvents);
   const EventsHidden = events.length - visibleEvents;
 
-  function handleEditEvent(event: EventType) {
-    setOpenEditEvent();
-    setEventToEdit(event);
-  }
-
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!myEvents.current) return;
 
     const observer = new IntersectionObserver(
@@ -44,51 +44,57 @@ function Events({ events, setOpenEditEvent, setEventToEdit }: EventsProps) {
     });
   }, []);
 
-  useEffect(() => {
-    console.log(visibleEvents);
-  }, [visibleEvents]);
-
-  //Check If everything is displaying
-  //If Something is not displaying don't render it, instead render button view more
-
   return (
     <>
       <div ref={myEvents} className="events">
         {eventsToShow.map((event) => (
-          <button
-            key={event.id}
-            onClick={() => handleEditEvent(event)}
-            className={
-              event.allDay ? `all-day-event ${event.color} event` : `event`
-            }
-          >
-            {!event.allDay && (
-              <>
-                <div className={`color-dot ${event.color}`}></div>
-                <div className="event-time">{format(event.date, "ha")}</div>
-              </>
-            )}
-            <div className="event-name">{event.name}</div>
-          </button>
+          <EventItem
+            event={event}
+            setOpenEditEvent={setOpenEditEvent}
+            setEventToEdit={setEventToEdit}
+          />
         ))}
         {EventsHidden > 0 && (
-          <button className="events-view-more-btn">+{EventsHidden} More</button>
+          <button
+            className="events-view-more-btn"
+            onClick={() => setOpenMoreEvents(true)}
+          >
+            +{EventsHidden} More
+          </button>
         )}
       </div>
+      <EventModal openEventModal={openEditEvent}>
+        <EditEventForm
+          event={eventToEdit}
+          dateToCreateEvent={events[0].date}
+          closeEventModal={() => setOpenEditEvent(false)}
+        />
+      </EventModal>
+      <EventModal openEventModal={openMoreEvents}>
+        <EventList
+          events={events}
+          closeEventListModal={() => setOpenMoreEvents(false)}
+          setOpenEditEvent={setOpenEditEvent}
+          setEventToEdit={setEventToEdit}
+        />
+      </EventModal>
     </>
   );
 }
 
-function compareDates(a: EventType, b: EventType) {
-  if (a.allDay) {
+export function compareDates(a: EventType, b: EventType) {
+  if (a.allDay && !b.allDay) {
     return -1;
-  } else if (b.allDay) {
-    return 1;
-  } else if (a.date < b.date) {
-    return -1;
-  } else if (b.date < a.date) {
+  } else if (!a.allDay && b.allDay) {
     return 1;
   }
+
+  if (a.date < b.date) {
+    return -1;
+  } else if (a.date > b.date) {
+    return 1;
+  }
+
   return 0;
 }
 

@@ -16,6 +16,7 @@ import { useState } from "react";
 import EventModal from "./modals/EventModal";
 import { EventType } from "./App";
 import Events from "./components/Events";
+import EditEventForm from "./components/EditEventForm";
 
 type CalendarProps = {
   monthShowed: Date;
@@ -25,7 +26,6 @@ type CalendarProps = {
 function Calendar({ monthShowed, events }: CalendarProps) {
   const [openEventModal, setOpenEventModal] = useState(false);
   const [dateToCreateEvent, setDateToCreateEvent] = useState(new Date());
-  const [eventToEdit, setEventToEdit] = useState<EventType>();
 
   const monthStart = startOfWeek(startOfMonth(monthShowed));
 
@@ -78,22 +78,17 @@ function Calendar({ monthShowed, events }: CalendarProps) {
               </button>
             </div>
             {containsEventInDate(day) && (
-              <Events
-                events={getEventsInDate(day)}
-                setOpenEditEvent={() => setOpenEventModal(true)}
-                setEventToEdit={setEventToEdit}
-              />
+              <Events events={getEventsInDate(day)} />
             )}
           </div>
         ))}
       </div>
-      <EventModal
-        openEventModal={openEventModal}
-        closeEventModal={() => setOpenEventModal(false)}
-        dateToCreateEvent={dateToCreateEvent}
-        event={eventToEdit}
-        clearEvent={() => setEventToEdit(undefined)}
-      />
+      <EventModal openEventModal={openEventModal}>
+        <EditEventForm
+          dateToCreateEvent={dateToCreateEvent}
+          closeEventModal={() => setOpenEventModal(false)}
+        />
+      </EventModal>
     </>
   );
 }

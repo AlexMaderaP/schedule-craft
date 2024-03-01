@@ -1,28 +1,14 @@
 import { createPortal } from "react-dom";
-import AddEventForm from "../components/AddEventForm";
-import { EventType } from "../App";
-import EditEventForm from "../components/EditEventForm";
-import { useLayoutEffect, useRef, useState } from "react";
+import { ReactNode, useLayoutEffect, useRef, useState } from "react";
 
 type EventModalProps = {
   openEventModal: boolean;
-  closeEventModal: () => void;
-  dateToCreateEvent: Date;
-  event?: EventType | undefined;
-  clearEvent: () => void;
+  children: ReactNode;
 };
 
-function EventModal({
-  openEventModal,
-  closeEventModal,
-  dateToCreateEvent,
-  event,
-  clearEvent,
-}: EventModalProps) {
+function EventModal({ openEventModal, children }: EventModalProps) {
   const [isClosing, setIsClosing] = useState(false);
   const prevIsOpen = useRef<boolean>();
-
-  const isEditing = event != undefined;
 
   useLayoutEffect(() => {
     if (!openEventModal && prevIsOpen.current) {
@@ -42,20 +28,7 @@ function EventModal({
       className={`modal ${isClosing ? "closing" : ""}`}
     >
       <div className="overlay"></div>
-      <div className="modal-body">
-        {isEditing ? (
-          <EditEventForm
-            event={event}
-            closeEventModal={closeEventModal}
-            clearEvent={clearEvent}
-          />
-        ) : (
-          <AddEventForm
-            dateToCreateEvent={dateToCreateEvent}
-            closeEventModal={closeEventModal}
-          />
-        )}
-      </div>
+      <div className="modal-body">{children}</div>
     </div>,
     document.querySelector("#modals")!
   );

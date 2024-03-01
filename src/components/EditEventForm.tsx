@@ -1,27 +1,32 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { type Color, useEvents, EventType } from "../App";
 import { format, set } from "date-fns";
 
 type EditEventFormProps = {
-  event: EventType;
+  dateToCreateEvent: Date;
+  event?: EventType;
   closeEventModal: () => void;
-  clearEvent: () => void;
 };
 
 function EditEventForm({
+  dateToCreateEvent,
   event,
   closeEventModal,
-  clearEvent,
 }: EditEventFormProps) {
-  const { editEvent, deleteEvent } = useEvents();
+  const { addEvent, editEvent, deleteEvent } = useEvents();
+  const id = useId();
 
-  const [name, setName] = useState(event.name);
-  const [allDay, setAllDay] = useState(event.allDay);
-  const [startTime, setStartTime] = useState(
-    event.allDay ? "" : format(event.date, "HH:mm")
-  );
-  const [endTime, setEndTime] = useState(event.allDay ? "" : event.endTime);
-  const [color, setColor] = useState<Color>(event.color);
+  const [name, setName] = useState(event?.name || "");
+  const [allDay, setAllDay] = useState(event?.allDay || false);
+  const [startTime, setStartTime] = useState(() => {
+    if (!event) return "";
+    return event.allDay ? "" : format(event.date, "HH:mm");
+  });
+  const [endTime, setEndTime] = useState(() => {
+    if (!event) return "";
+    return event.allDay ? "" : event.endTime;
+  });
+  const [color, setColor] = useState<Color>(event?.color || "blue");
   const [timeError, setTimeError] = useState("");
 
   const isValidTime = timeError === "";
@@ -49,52 +54,56 @@ function EditEventForm({
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (isValidTime) {
-      let editedEvent: EventType;
+      let newEvent: EventType;
 
       const commonProperties = {
-        id: event.id,
-        date: event.date,
+        id: event?.id || crypto.randomUUID(),
+        date: event?.date || dateToCreateEvent,
         name: name,
         allDay: allDay,
         color: color,
       };
 
       if (allDay) {
-        editedEvent = {
+        newEvent = {
           ...commonProperties,
         };
       } else {
         const hours = +startTime.slice(0, 2);
         const mins = +startTime.slice(3);
-        const dateWithStartTime = set(event.date, {
+        const dateWithStartTime = set(commonProperties.date, {
           hours: hours,
           minutes: mins,
         });
-        editedEvent = {
+        newEvent = {
           ...commonProperties,
           date: dateWithStartTime,
           endTime: endTime,
         };
       }
-      editEvent(editedEvent);
+      if (event) {
+        editEvent(newEvent);
+      } else {
+        addEvent(newEvent);
+      }
+
       handleClose();
     }
   }
 
   function handleClose() {
-    clearEvent();
     closeEventModal();
   }
 
   function handleDelete() {
-    deleteEvent(event.id);
+    if (event) deleteEvent(event.id);
     handleClose();
   }
   return (
     <>
       <div className="modal-title">
-        <div>Edit Event</div>
-        <small>{format(event.date, "MM/dd/yyyy")}</small>
+        <div>{event ? "Edit" : "Add"} Event</div>
+        <small>{format(dateToCreateEvent, "MM/dd/yyyy")}</small>
         <button className="close-btn" onClick={handleClose}>
           &times;
         </button>
@@ -115,11 +124,11 @@ function EditEventForm({
           <input
             type="checkbox"
             name="all-day"
-            id="all-day"
+            id={`${id}all-day`}
             checked={allDay}
             onChange={handleAllDayChange}
           />
-          <label htmlFor="all-day">All Day?</label>
+          <label htmlFor={`${id}all-day`}>All Day?</label>
         </div>
         <div className="row">
           <div className="form-group">
@@ -159,36 +168,36 @@ function EditEventForm({
               type="radio"
               name="color"
               value="blue"
-              id="blue"
+              id={`${id}blue`}
               checked={color === "blue"}
               className="color-radio"
               onChange={handleColorChange}
             />
-            <label htmlFor="blue">
+            <label htmlFor={`${id}blue`}>
               <span className="sr-only">Blue</span>
             </label>
             <input
               type="radio"
               name="color"
               value="red"
-              id="red"
+              id={`${id}red`}
               checked={color === "red"}
               className="color-radio"
               onChange={handleColorChange}
             />
-            <label htmlFor="red">
+            <label htmlFor={`${id}red`}>
               <span className="sr-only">Red</span>
             </label>
             <input
               type="radio"
               name="color"
               value="green"
-              id="green"
+              id={`${id}green`}
               checked={color === "green"}
               className="color-radio"
               onChange={handleColorChange}
             />
-            <label htmlFor="green">
+            <label htmlFor={`${id}green`}>
               <span className="sr-only">Green</span>
             </label>
           </div>
@@ -199,7 +208,7 @@ function EditEventForm({
             type="submit"
             disabled={!isValidTime}
           >
-            Edit
+            {event ? "Edit" : "Add"}
           </button>
           <button
             className="btn btn-delete"
