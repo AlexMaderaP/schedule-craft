@@ -1,6 +1,7 @@
 import { useEffect, useId, useState } from "react";
-import { type Color, useEvents, EventType } from "../App";
 import { format, set } from "date-fns";
+import { Color, EventType } from "../context/EventsContext";
+import { useEvents } from "../hooks/useEvents";
 
 type EditEventFormProps = {
   dateToCreateEvent: Date;

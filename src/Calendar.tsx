@@ -12,27 +12,66 @@ import {
   startOfWeek,
   subDays,
 } from "date-fns";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import EventModal from "./modals/EventModal";
-import { EventType } from "./App";
+import { useEvents } from "./hooks/useEvents";
 import Events from "./components/Events";
 import EditEventForm from "./components/EditEventForm";
 
 type CalendarProps = {
   monthShowed: Date;
-  events: EventType[];
 };
 
-function Calendar({ monthShowed, events }: CalendarProps) {
+function Calendar({ monthShowed }: CalendarProps) {
   const [openEventModal, setOpenEventModal] = useState(false);
   const [dateToCreateEvent, setDateToCreateEvent] = useState(new Date());
 
   const monthStart = startOfWeek(startOfMonth(monthShowed));
 
-  const dateRange = eachDayOfInterval({
-    start: monthStart,
-    end: endOfWeek(endOfMonth(monthShowed)),
-  });
+  const dateRange = useMemo(() => {
+    return eachDayOfInterval({
+      start: monthStart,
+      end: endOfWeek(endOfMonth(monthShowed)),
+    });
+  }, [monthShowed]);
+
+  return (
+    <>
+      <div className="days">
+        {dateRange.map((day) => (
+          <CalendarDay
+            key={day.getTime()}
+            day={day}
+            setDateToCreateEvent={setDateToCreateEvent}
+            monthShowed={monthShowed}
+            setOpenEventModal={setOpenEventModal}
+          />
+        ))}
+      </div>
+      <EventModal openEventModal={openEventModal}>
+        <EditEventForm
+          dateToCreateEvent={dateToCreateEvent}
+          closeEventModal={() => setOpenEventModal(false)}
+        />
+      </EventModal>
+    </>
+  );
+}
+
+type CalendarDayProps = {
+  day: Date;
+  monthShowed: Date;
+  setOpenEventModal: React.Dispatch<React.SetStateAction<boolean>>;
+  setDateToCreateEvent: React.Dispatch<React.SetStateAction<Date>>;
+};
+
+function CalendarDay({
+  day,
+  monthShowed,
+  setDateToCreateEvent,
+  setOpenEventModal,
+}: CalendarDayProps) {
+  const { events } = useEvents();
 
   function handleMonthClass(day: Date) {
     let className = "day";
@@ -42,7 +81,7 @@ function Calendar({ monthShowed, events }: CalendarProps) {
   }
 
   function isDayOfFirstWeek(day: Date) {
-    return isSameWeek(day, monthStart);
+    return isSameWeek(day, startOfMonth(monthShowed));
   }
 
   function handleAddEvent(day: Date) {
@@ -59,37 +98,20 @@ function Calendar({ monthShowed, events }: CalendarProps) {
   }
 
   return (
-    <>
-      <div className="days">
-        {dateRange.map((day) => (
-          <div key={day.getTime()} className={handleMonthClass(day)}>
-            <div className="day-header">
-              {isDayOfFirstWeek(day) && (
-                <div className="week-name">{format(day, "iii")}</div>
-              )}
-              <div className={`day-number ${isToday(day) && "today"}`}>
-                {format(day, "d")}
-              </div>
-              <button
-                className="add-event-btn"
-                onClick={() => handleAddEvent(day)}
-              >
-                +
-              </button>
-            </div>
-            {containsEventInDate(day) && (
-              <Events events={getEventsInDate(day)} />
-            )}
-          </div>
-        ))}
+    <div className={handleMonthClass(day)}>
+      <div className="day-header">
+        {isDayOfFirstWeek(day) && (
+          <div className="week-name">{format(day, "iii")}</div>
+        )}
+        <div className={`day-number ${isToday(day) && "today"}`}>
+          {format(day, "d")}
+        </div>
+        <button className="add-event-btn" onClick={() => handleAddEvent(day)}>
+          +
+        </button>
       </div>
-      <EventModal openEventModal={openEventModal}>
-        <EditEventForm
-          dateToCreateEvent={dateToCreateEvent}
-          closeEventModal={() => setOpenEventModal(false)}
-        />
-      </EventModal>
-    </>
+      {containsEventInDate(day) && <Events events={getEventsInDate(day)} />}
+    </div>
   );
 }
 
