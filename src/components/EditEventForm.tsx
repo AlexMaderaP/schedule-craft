@@ -97,8 +97,8 @@ function EditEventForm({
   }
 
   function handleDelete() {
-    if (event) deleteEvent(event.id);
     handleClose();
+    if (event) deleteEvent(event.id);
   }
   return (
     <>

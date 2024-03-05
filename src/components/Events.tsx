@@ -1,66 +1,42 @@
 import { EventType } from "../context/EventsContext";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import EventModal from "../modals/EventModal";
 import EventList from "./EventList";
 import EventItem from "./EventItem";
+import OverFlowContainer from "./OverFlowContainer";
+import { isAfter, isBefore } from "date-fns";
 
 type EventsProps = {
   events: EventType[];
 };
 
 function Events({ events }: EventsProps) {
-  const myEvents = useRef<HTMLDivElement>(null);
-  const [visibleEvents, setVisibleEvents] = useState(events.length);
   const [openMoreEvents, setOpenMoreEvents] = useState(false);
 
   const sortedEvents = useMemo(() => {
     return [...events].sort(compareDates);
   }, [events]);
 
-  const eventsToShow = sortedEvents.slice(0, visibleEvents);
-  const EventsHidden = events.length - visibleEvents;
-
-  useEffect(() => {
-    if (!myEvents.current) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        let count = 0;
-
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            count++;
-          }
-        }
-
-        setVisibleEvents(count);
-      },
-      { threshold: 1 }
-    );
-
-    myEvents.current.querySelectorAll(".event").forEach((event) => {
-      observer.observe(event);
-    });
-  }, []);
-
   return (
     <>
-      <div ref={myEvents} className="events">
-        {eventsToShow.map((event) => (
-          <EventItem key={event.id} event={event} />
-        ))}
-        {EventsHidden > 0 && (
+      <OverFlowContainer
+        className="events"
+        items={sortedEvents}
+        getKey={(event) => event.id}
+        renderItem={(event) => <EventItem event={event} />}
+        renderOverflow={(amount) => (
           <button
             className="events-view-more-btn"
             onClick={() => setOpenMoreEvents(true)}
           >
-            +{EventsHidden} More
+            +{amount} More
           </button>
         )}
-      </div>
+      />
+
       <EventModal openEventModal={openMoreEvents}>
         <EventList
-          events={events}
+          events={sortedEvents}
           closeEventListModal={() => setOpenMoreEvents(false)}
         />
       </EventModal>
@@ -75,9 +51,9 @@ export function compareDates(a: EventType, b: EventType) {
     return 1;
   }
 
-  if (a.date < b.date) {
+  if (isBefore(a.date, b.date)) {
     return -1;
-  } else if (a.date > b.date) {
+  } else if (isAfter(a.date, b.date)) {
     return 1;
   }
 
