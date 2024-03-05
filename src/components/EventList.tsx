@@ -1,4 +1,4 @@
-import { EventType } from "../App";
+import { EventType } from "../context/EventsContext";
 import { format } from "date-fns";
 import EventItem from "./EventItem";
 import { compareDates } from "./Events";
@@ -6,16 +6,9 @@ import { compareDates } from "./Events";
 type EventListProps = {
   events: EventType[];
   closeEventListModal: () => void;
-  setOpenEditEvent: React.Dispatch<React.SetStateAction<boolean>>;
-  setEventToEdit: React.Dispatch<React.SetStateAction<EventType | undefined>>;
 };
 
-function EventList({
-  events,
-  closeEventListModal,
-  setOpenEditEvent,
-  setEventToEdit,
-}: EventListProps) {
+function EventList({ events, closeEventListModal }: EventListProps) {
   events.sort(compareDates);
 
   return (
@@ -28,11 +21,7 @@ function EventList({
       </div>
       <div className="events">
         {events.map((event) => (
-          <EventItem
-            event={event}
-            setOpenEditEvent={setOpenEditEvent}
-            setEventToEdit={setEventToEdit}
-          />
+          <EventItem key={event.id} event={event} />
         ))}
       </div>
     </>

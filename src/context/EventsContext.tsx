@@ -4,7 +4,7 @@ import { useLocalStorage } from "../hooks/useLocalStorage";
 export type Color = "red" | "blue" | "green";
 
 export type EventType = {
-  id: String;
+  id: string;
   date: Date;
   name: string;
   allDay: boolean;

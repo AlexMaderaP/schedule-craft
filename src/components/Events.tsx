@@ -1,7 +1,6 @@
-import { EventType } from "../App";
-import { useEffect, useRef, useState } from "react";
+import { EventType } from "../context/EventsContext";
+import { useEffect, useMemo, useRef, useState } from "react";
 import EventModal from "../modals/EventModal";
-import EditEventForm from "./EditEventForm";
 import EventList from "./EventList";
 import EventItem from "./EventItem";
 
@@ -12,13 +11,13 @@ type EventsProps = {
 function Events({ events }: EventsProps) {
   const myEvents = useRef<HTMLDivElement>(null);
   const [visibleEvents, setVisibleEvents] = useState(events.length);
-  const [eventToEdit, setEventToEdit] = useState<EventType>();
   const [openMoreEvents, setOpenMoreEvents] = useState(false);
-  const [openEditEvent, setOpenEditEvent] = useState(false);
 
-  events.sort(compareDates);
+  const sortedEvents = useMemo(() => {
+    return [...events].sort(compareDates);
+  }, [events]);
 
-  const eventsToShow = events.slice(0, visibleEvents);
+  const eventsToShow = sortedEvents.slice(0, visibleEvents);
   const EventsHidden = events.length - visibleEvents;
 
   useEffect(() => {
@@ -48,11 +47,7 @@ function Events({ events }: EventsProps) {
     <>
       <div ref={myEvents} className="events">
         {eventsToShow.map((event) => (
-          <EventItem
-            event={event}
-            setOpenEditEvent={setOpenEditEvent}
-            setEventToEdit={setEventToEdit}
-          />
+          <EventItem key={event.id} event={event} />
         ))}
         {EventsHidden > 0 && (
           <button
@@ -63,19 +58,10 @@ function Events({ events }: EventsProps) {
           </button>
         )}
       </div>
-      <EventModal openEventModal={openEditEvent}>
-        <EditEventForm
-          event={eventToEdit}
-          dateToCreateEvent={events[0].date}
-          closeEventModal={() => setOpenEditEvent(false)}
-        />
-      </EventModal>
       <EventModal openEventModal={openMoreEvents}>
         <EventList
           events={events}
           closeEventListModal={() => setOpenMoreEvents(false)}
-          setOpenEditEvent={setOpenEditEvent}
-          setEventToEdit={setEventToEdit}
         />
       </EventModal>
     </>

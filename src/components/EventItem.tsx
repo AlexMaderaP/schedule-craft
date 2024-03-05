@@ -1,35 +1,40 @@
-import React from "react";
-import { EventType } from "../App";
+import { useState } from "react";
+import { EventType } from "../context/EventsContext";
 import { format } from "date-fns";
+import EventModal from "../modals/EventModal";
+import EditEventForm from "./EditEventForm";
 
 type EventListProps = {
   event: EventType;
-  setOpenEditEvent: React.Dispatch<React.SetStateAction<boolean>>;
-  setEventToEdit: React.Dispatch<React.SetStateAction<EventType | undefined>>;
 };
 
-function EventItem({
-  event,
-  setOpenEditEvent,
-  setEventToEdit,
-}: EventListProps) {
-  function handleSetEventToEdit(event: EventType) {
-    setEventToEdit(event);
-    setOpenEditEvent(true);
-  }
+function EventItem({ event }: EventListProps) {
+  const [openEditEvent, setOpenEditEvent] = useState(false);
+
   return (
-    <button
-      onClick={() => handleSetEventToEdit(event)}
-      className={event.allDay ? `all-day-event ${event.color} event` : `event`}
-    >
-      {!event.allDay && (
-        <>
-          <div className={`color-dot ${event.color}`}></div>
-          <div className="event-time">{format(event.date, "ha")}</div>
-        </>
-      )}
-      <div className="event-name">{event.name}</div>
-    </button>
+    <>
+      <button
+        onClick={() => setOpenEditEvent(true)}
+        className={
+          event.allDay ? `all-day-event ${event.color} event` : `event`
+        }
+      >
+        {!event.allDay && (
+          <>
+            <div className={`color-dot ${event.color}`}></div>
+            <div className="event-time">{format(event.date, "ha")}</div>
+          </>
+        )}
+        <div className="event-name">{event.name}</div>
+      </button>
+      <EventModal openEventModal={openEditEvent}>
+        <EditEventForm
+          event={event}
+          dateToCreateEvent={event.date}
+          closeEventModal={() => setOpenEditEvent(false)}
+        />
+      </EventModal>
+    </>
   );
 }
 

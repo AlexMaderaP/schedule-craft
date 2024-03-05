@@ -211,13 +211,15 @@ function EditEventForm({
           >
             {event ? "Edit" : "Add"}
           </button>
-          <button
-            className="btn btn-delete"
-            type="button"
-            onClick={handleDelete}
-          >
-            Delete
-          </button>
+          {event && (
+            <button
+              className="btn btn-delete"
+              type="button"
+              onClick={handleDelete}
+            >
+              Delete
+            </button>
+          )}
         </div>
       </form>
     </>
